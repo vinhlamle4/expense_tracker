@@ -156,6 +156,8 @@ Examples of foundational tasks (adjust based on your project):
 - [ ] TXXX [P] Additional unit tests (if requested) in tests/unit/
 - [ ] TXXX Security hardening
 - [ ] TXXX Run quickstart.md validation
+- [ ] TXXX Security & Permissions: Audit all features for correct use of `permission_handler` and rationale dialogs per Principle VI
+- [ ] TXXX Storage & Data Handling: Verify all exports target the Downloads folder, no background writes to public storage, and Android Scoped Storage / iOS File Sharing compliance per Principle VI
 
 ---
 
@@ -214,7 +216,7 @@ Task: "Create [Entity2] model in src/models/[entity2].py"
 ### MVP First (User Story 1 Only)
 
 1. Complete Phase 1: Setup
-2. Complete Phase 2: Foundational (CRITICAL - blocks all stories)
+2. Complete Phase 2: Foundational
 3. Complete Phase 3: User Story 1
 4. **STOP and VALIDATE**: Test User Story 1 independently
 5. Deploy/demo if ready

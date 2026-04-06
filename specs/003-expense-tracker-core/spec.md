@@ -94,18 +94,35 @@ A user prefers to use the app at night in Dark mode. They open Settings, toggle 
 
 ### User Story 6 - CSV Export (Priority: P6)
 
-A user wants to back up or analyze their data in a spreadsheet. They navigate to the Export section, tap "Export to CSV", and the app generates a CSV file containing all transactions (or those matching active filters) and saves it to the device's local storage. A confirmation message shows the file path.
+A user wants to back up or analyze their data in a spreadsheet. They navigate to the Export section, tap "Export to CSV", and the app generates a CSV file containing all transactions (or those matching active filters) and saves it to the device's public **Downloads** folder. A confirmation message shows the file path and offers quick "Open" and "Share" actions.
 
 **Why this priority**: CSV export is a convenience feature for data portability. It delivers standalone value without impacting any other user story.
 
-**Independent Test**: Can be tested by adding transactions and triggering the export, then verifying the generated CSV file exists on device storage, contains the correct columns and row count, and can be opened in a spreadsheet app.
+**Independent Test**: Can be tested by adding transactions and triggering the export, then verifying the generated CSV file exists in the device's Downloads folder, contains the correct columns and row count, and can be opened in a spreadsheet app.
 
 **Acceptance Scenarios**:
 
-1. **Given** 50 transactions exist, **When** the user taps "Export to CSV", **Then** a CSV file is saved to the device's Documents folder containing 50 data rows plus a header row with columns: Date, Type, Category, Amount, Note.
+1. **Given** 50 transactions exist, **When** the user taps "Export to CSV", **Then** a CSV file is saved to the device's public **Downloads** folder containing 50 data rows plus a header row with columns: Date, Type, Category, Amount, Note.
 2. **Given** an active category filter for "Food & Drink" is applied, **When** the user exports, **Then** the CSV contains only transactions in that category.
-3. **Given** the export completes successfully, **When** the user views the confirmation, **Then** the full file path is displayed and the file is accessible via the device's file manager.
+3. **Given** the export completes successfully, **When** the user views the confirmation, **Then** the full file path is displayed and the file is accessible via the device's native file manager.
 4. **Given** the device has insufficient storage, **When** export is attempted, **Then** a user-friendly error message is displayed and no partial file is left on disk.
+
+---
+
+### User Story 7 - External Export & Sharing (Priority: P7)
+
+As a user, I want my exported CSV files to appear in my device's **Downloads** folder so that I can easily find, open (via Excel or Google Sheets), or share them (via Email or Zalo) without searching through hidden system folders.
+
+**Why this priority**: Saving to the Downloads folder is a platform-compliant, user-discoverable behaviour that removes friction from post-export workflows. It builds directly on US6 (CSV Export) and delivers measurable usability improvement by ensuring the file is immediately accessible via the native file manager and shareable to external apps. The required storage permission handling is governed by Constitution Principle VI.
+
+**Independent Test**: Can be tested by triggering an export, opening the device's native file manager, confirming the file is present in the Downloads folder with a descriptive filename, opening it in a spreadsheet app, and sharing it via the OS share sheet — all without requiring any other user stories beyond US6.
+
+**Acceptance Scenarios**:
+
+1. **Given** a CSV export completes successfully, **When** the user opens the device's native file manager, **Then** the exported file is visible in the Downloads folder with a descriptive, timestamped filename (e.g., `transactions_2026-04-06.csv`).
+2. **Given** the exported CSV file is in the Downloads folder, **When** the user taps "Open" in the export confirmation, **Then** the device presents the file in a compatible app (e.g., Microsoft Excel, Google Sheets) or shows an OS app chooser if multiple options exist.
+3. **Given** the exported CSV file exists in Downloads, **When** the user taps "Share" in the export confirmation, **Then** the OS share sheet appears and the file can be sent via Email, Zalo, or any installed app that accepts file attachments.
+4. **Given** the app does not yet have the required storage/media write permission, **When** the user triggers an export, **Then** the app shows a rationale dialog explaining why the permission is needed; only after the user agrees does it request permission via `permission_handler`; if denied, a clear message guides the user to re-enable it in device Settings.
 
 ---
 
@@ -120,6 +137,9 @@ A user wants to back up or analyze their data in a spreadsheet. They navigate to
 - What happens when the date range filter has a start date later than the end date?
 - How does the weekly chart display when the week spans two different months?
 - How does the system mode behave on devices that do not support dark mode at the OS level?
+- What happens if a file with the same timestamped name already exists in the Downloads folder? (The app MUST either overwrite the existing file or append an index suffix to avoid silent data loss.)
+- What happens if the device's Downloads folder path is unavailable (e.g., emulator without external storage configured)? (The app MUST show a descriptive error; no crash.)
+- What happens if the user permanently denies the storage/media permission? (The app MUST show a guidance dialog directing the user to re-enable the permission in device Settings.)
 
 ## Requirements *(mandatory)*
 
@@ -144,10 +164,12 @@ A user wants to back up or analyze their data in a spreadsheet. They navigate to
 - **FR-017**: Users MUST be able to clear all active search/filter criteria to restore the full transaction list.
 - **FR-018**: Users MUST be able to select a theme mode from: Light, Dark, or System.
 - **FR-019**: The selected theme mode MUST be persisted to local storage and applied on every subsequent app launch before the first screen renders (no visible flicker).
-- **FR-020**: Users MUST be able to export all transactions (or the currently filtered subset) to a CSV file saved to the device's local Documents folder.
+- **FR-020**: Users MUST be able to export all transactions (or the currently filtered subset) to a CSV file saved to the device's public **Downloads** folder.
 - **FR-021**: The exported CSV MUST include a header row and the following columns per transaction: Date, Type, Category, Amount, Note.
-- **FR-022**: The system MUST display the saved file path upon successful export and show a user-friendly error if export fails.
+- **FR-022**: The system MUST display the saved file path upon successful export, offer "Open" and "Share" quick actions, and show a user-friendly error if export fails.
 - **FR-023**: The app MUST function fully without any network connectivity; no feature may require an internet connection.
+- **FR-024**: The exported CSV file MUST be placed in the device's public Downloads folder, ensuring it is immediately visible in the native file manager and accessible to third-party apps (e.g., spreadsheet editors, sharing apps) without requiring root or developer access.
+- **FR-025**: The system MUST check and request storage/media write permission using `permission_handler` before writing to the Downloads folder. A rationale dialog MUST be displayed before the OS permission prompt is shown. If the user denies the permission, the system MUST show a clear message and, where the permission is permanently denied, guide the user to re-enable it in device Settings — per Constitution Principle VI.
 
 ### Key Entities
 
@@ -162,7 +184,7 @@ A user wants to back up or analyze their data in a spreadsheet. They navigate to
 - **SC-001**: A user can create a complete transaction (amount, date, type, category, note) in under 30 seconds from tapping "Add" to seeing it in the list.
 - **SC-002**: The Dashboard totals and chart update within 1 second of a transaction being created, edited, or deleted — without requiring navigation away and back.
 - **SC-003**: The app launches and displays the previously selected theme mode (Light/Dark/System) before the first screen is visible; no white-flash or theme switch is observable after the splash.
-- **SC-004**: The app remains fully functional — all six user stories operational — with no network connection present.
+- **SC-004**: The app remains fully functional — all seven user stories operational — with no network connection present.
 - **SC-005**: The transaction list scrolls without perceptible lag for lists of up to 1,000 entries; search results appear within 500 milliseconds of the user finishing typing.
 - **SC-006**: CSV export completes and a confirmation is shown within 5 seconds for up to 1,000 transactions.
 - **SC-007**: 90% of first-time users can add their first transaction successfully without consulting documentation (task-completion rate on primary flow).
@@ -173,8 +195,8 @@ A user wants to back up or analyze their data in a spreadsheet. They navigate to
 - The default currency is Vietnamese Dong (VND); currency selection is out of scope for this version.
 - A fixed set of default categories (e.g., Food & Drink, Transport, Shopping, Healthcare, Salary, Other Income) is pre-populated on first launch.
 - Transactions without an explicitly assigned category are automatically placed under "Uncategorized".
-- The CSV export targets the device's standard Documents directory; no custom path selection is required.
-- On Android, the app requests storage write permission at the time of the first export; the permission UX follows OS-standard patterns.
+- The CSV export MUST target the device's public Downloads folder to ensure user discoverability and compliance with Constitution Principle VI (Storage & Data Handling). No custom path selection UI is required.
+- On Android, the app requests storage/media write permission via `permission_handler` at the time of the first export, preceded by a rationale dialog per Constitution Principle VI. On iOS, the exported file is placed in the app's shared Documents container exposed via Files app (iOS File Sharing), which satisfies the public-accessibility requirement.
 - No transaction amount limits are enforced beyond the constraint that amount must be a positive number.
 - Date range for a transaction is a single calendar date (not a date-time), and the app uses the device's local timezone.
 - "System" theme mode inherits the OS-level dark/light preference; on devices where OS dark mode is unavailable, System falls back to Light.

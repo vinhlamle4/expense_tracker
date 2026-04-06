@@ -66,5 +66,13 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>This app needs access to your Documents folder to export CSV files.</string>
+	<!-- Expose the app's Documents directory in the system Files app (iOS File Sharing) -->
+	<key>UIFileSharingEnabled</key>
+	<true/>
+	<!-- Allow files to be opened in-place from the Files app -->
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
 </dict>
 </plist>

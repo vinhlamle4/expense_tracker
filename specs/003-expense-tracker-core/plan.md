@@ -5,7 +5,7 @@
 
 ## Summary
 
-Build six core features of the Flutter Expense Tracker — Transaction CRUD, Category Classification, Dashboard with charts, Search & Filter, Light/Dark/System theme toggle, and CSV export — using a local-only Isar database, MVVM architecture with `hooks_riverpod` + `flutter_hooks`, and strict Material Design 3. No network calls are made at any point.
+Build six core features of the Flutter Expense Tracker — Transaction CRUD, Category Classification, Dashboard with charts, Search & Filter, Light/Dark/System theme toggle, and CSV export to the public Downloads folder — using a local-only Isar database, MVVM architecture with `hooks_riverpod` + `flutter_hooks`, and strict Material Design 3. No network calls are made at any point.
 
 ## Technical Context
 
@@ -30,6 +30,7 @@ Build six core features of the Flutter Expense Tracker — Transaction CRUD, Cat
 | III. Local-First Storage | Isar selected; no `http`/`dio`/`connectivity` introduced; theme mode persisted to `Settings` collection | ✅ Pass |
 | IV. State Management | `HookConsumerWidget` preferred; `flutter_hooks` for ephemeral state; `StatefulWidget` not used | ✅ Pass |
 | V. Coding Standards | `snake_case` files, `PascalCase` classes, `camelCase` vars; one widget per file; `flutter_lints ^6.0.0` active | ✅ Pass |
+| VI. Security & Permissions | `permission_handler` used for all storage permission requests; rationale dialog shown before OS prompt; denial handled with guidance to Settings; all permission logic in `PermissionService` (not in Widgets); CSV exports saved to public Downloads folder per Storage & Data Handling sub-rule | ✅ Pass |
 
 No violations. Complexity Tracking table not required.
 
@@ -125,7 +126,7 @@ lib/
 │   ├── theme/
 │   │   └── app_theme.dart                # ThemeData light/dark (useMaterial3: true)
 │   └── utils/
-│       └── csv_export_service.dart       # Pure CSV-generation + file-write utility
+│       └── csv_export_service.dart       # CSV generation + writes to public Downloads folder
 │
 ├── data/
 │   ├── models/
@@ -184,7 +185,7 @@ test/
 | **Phase 2** — Theme & Layout | `app_theme.dart` · `theme_view_model.dart` · MVVM folder structure · `main.dart` scaffold |
 | **Phase 3** — Core Logic (ViewModels) | `transaction_view_model.dart` · `dashboard_view_model.dart` · `filter_providers.dart` |
 | **Phase 4** — UI Implementation | `dashboard_screen.dart` · `transaction_list_screen.dart` · `add_edit_transaction_sheet.dart` · `settings_screen.dart` · shared widgets |
-| **Phase 5** — Utilities & Polish | `csv_export_service.dart` · permission handling · M3 color audit · performance pass |
+| **Phase 5** — Utilities & Polish | `csv_export_service.dart` (writes to public Downloads folder) · `permission_service.dart` · permission rationale + denial UX · M3 color audit · performance pass |
 
 ## Complexity Tracking
 

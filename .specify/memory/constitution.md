@@ -1,33 +1,19 @@
 <!--
   SYNC IMPACT REPORT
   ==================
-  Version change: (unversioned template) → 1.0.0
-  Bump type: MINOR — initial population; all principles and sections are new.
+  Version change: 1.1.0 → 1.2.0
+  Bump type: MINOR — material expansion of Principle VI with new "Storage & Data Handling" subsection.
+  Also corrected a pre-existing error: Governance "Compliance Review" now correctly references I–VI (was I–V).
 
-  Principles added (all new):
-    - I.  MVVM Architecture (NON-NEGOTIABLE)
-    - II. Material Design 3 Compliance (NON-NEGOTIABLE)
-    - III. Local-First Storage
-    - IV. State Management via hooks_riverpod
-    - V.  Coding Standards
-
-  Sections added:
-    - UI/UX & Theme Rules
-    - Project Tooling
-    - Governance
+  Principles modified:
+    - VI. Security & Permissions — added "#### Storage & Data Handling" subsection covering:
+        public directory (Downloads) requirement for exports, user-privacy guard on sensitive
+        data in public folders, and mandatory Android Scoped Storage / iOS File Sharing compliance.
 
   Templates requiring updates:
-    ✅ .specify/templates/plan-template.md      — aligned; "Constitution Check" gate
-                                                  now references Principles I–V.
-    ✅ .specify/templates/spec-template.md      — aligned; FR/SC/user-story structure
-                                                  is compatible with Flutter mobile scope.
-    ✅ .specify/templates/tasks-template.md     — aligned; phase/story model is
-                                                  framework-agnostic; mobile path
-                                                  conventions (lib/, test/) apply.
-    ✅ .specify/templates/agent-file-template.md — aligned; populated per feature plan;
-                                                  no outdated agent-specific references.
-    ✅ .specify/templates/checklist-template.md  — aligned; generic structure,
-                                                  no outdated agent-specific names.
+    ✅ .specify/templates/plan-template.md      — Constitution Check already references Principles I–VI. No change needed.
+    ✅ .specify/templates/spec-template.md      — Edge cases already cover storage/permission scenarios. No change needed.
+    ✅ .specify/templates/tasks-template.md     — Polish phase audit task updated to reference Storage & Data Handling.
 
   Deferred TODOs: None.
 -->
@@ -131,6 +117,63 @@ Uniform naming, structure, and clean-code rules apply across the entire codebase
 enforce the MVVM boundary at the file-import level, and ensure the dependency
 graph is reproducible and auditable.
 
+### VI. Security & Permissions
+
+#### Permission Management
+- **Mandatory use of** the [`permission_handler`](https://pub.dev/packages/permission_handler) package for all system permission requests (e.g., file writing, storage access).
+- Do not use native APIs or other packages to request permissions, bypassing permission_handler.
+
+#### User Experience
+- **Explain permission rationale:** Before showing the permission dialog, always display a brief rationale screen to the user explaining why the permission is needed (e.g., "The app needs storage access to export CSV files").
+- **Handle denial cases:** If the user denies (Denied) or permanently denies (Permanently Denied) the permission, a clear message must be shown, guiding the user on how to re-enable the permission in Settings if necessary.
+- The app must not crash or hide features without informing the user of the reason.
+
+#### Implementation Rules
+- All logic for checking, requesting, and handling permissions must reside in the ViewModel or Service, not directly in Widgets.
+- Standard flow when a permission is needed:
+  1. Check the current permission status.
+  2. If not granted, show rationale (explanation).
+  3. Only after user agrees, call permission_handler to request the permission.
+  4. If denied, show a message and guide the user to open Settings if needed.
+- Do not call file/export APIs directly if permission has not been granted.
+
+#### Example (pseudo-code)
+```dart
+Future<void> exportCsv(BuildContext context) async {
+  final status = await Permission.storage.status;
+  if (!status.isGranted) {
+    // Show rationale dialog
+    final shouldRequest = await showRationaleDialog(context);
+    if (!shouldRequest) return;
+    final result = await Permission.storage.request();
+    if (!result.isGranted) {
+      // Show error message and guide to open Settings if needed
+      showPermissionDeniedDialog(context, result.isPermanentlyDenied);
+      return;
+    }
+  }
+  // Permission granted, proceed to export CSV
+  await doExportCsv();
+}
+```
+
+#### Storage & Data Handling
+
+- **Public Accessibility:** All user-initiated exports (e.g., CSV) MUST be saved to public
+  directories (specifically the **Downloads** folder). The app MUST NOT save exports to
+  app-private directories that are inaccessible to the user's file manager.
+- **User Privacy:** Sensitive transaction data MUST NOT be written to public folders unless
+  explicitly triggered by the "Export" action initiated by the user. Background or automatic
+  writes to public storage are STRICTLY PROHIBITED.
+- **Platform Compliance:** Export features MUST follow **Android Scoped Storage** guidelines
+  and **iOS File Sharing** protocols. No platform-specific workarounds that bypass OS-level
+  storage policies are permitted.
+
+**Rationale**: Placing exports in the Downloads folder ensures discoverability and respects
+user intent. The privacy guard prevents accidental data leakage. Platform compliance
+eliminates rejection risks on the Play Store and App Store and keeps the app aligned with
+evolving OS permission models.
+
 ## UI/UX & Theme Rules
 
 Additional interface rules that complement Principle II:
@@ -175,7 +218,7 @@ and ad-hoc agreements for the Expense Tracker project.
   the Sync Impact Report at the top of this file.
 - **Compliance Review**: Every pull request MUST include a "Constitution Check"
   section in the associated `plan.md` that explicitly verifies alignment with
-  Principles I–V before Phase 0 research and again after Phase 1 design.
+  Principles I–VI before Phase 0 research and again after Phase 1 design.
 - **Versioning Policy**:
   - **MAJOR** — Removal or fundamental redefinition of a Core Principle.
   - **MINOR** — Addition of a new principle or material expansion of an existing
@@ -189,4 +232,4 @@ and ad-hoc agreements for the Expense Tracker project.
   as the authoritative governance document in all agent-assisted development
   sessions via Context7.
 
-**Version**: 1.0.0 | **Ratified**: 2026-04-06 | **Last Amended**: 2026-04-06
+**Version**: 1.2.0 | **Ratified**: 2026-04-06 | **Last Amended**: 2026-04-06

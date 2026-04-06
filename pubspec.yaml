@@ -50,6 +50,8 @@ dependencies:
   csv: ^6.0.0
   permission_handler: ^11.3.1
   intl: ^0.20.2
+  share_plus: ^10.1.4        # OS share sheet for CSV sharing
+  open_filex: ^4.6.0         # Open exported file in default app (Excel, Sheets, etc.)
 
 dev_dependencies:
   flutter_test:
@@ -72,15 +74,15 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-  # To add assets to your application, add an assets section, like this:
-  # assets:
+  # To add asset to your application, add an asset section, like this:
+  # asset:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
-  # For details regarding adding assets from package dependencies, see
+  # For details regarding adding asset from package dependencies, see
   # https://flutter.dev/to/asset-from-package
 
   # To add custom fonts to your application, add a fonts section here,
