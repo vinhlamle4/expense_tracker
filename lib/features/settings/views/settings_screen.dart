@@ -1,10 +1,8 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 import '../../../core/utils/csv_export_service.dart';
+import '../../../core/utils/permission_service.dart';
 import '../../../data/models/category_model.dart';
 import '../../../shared/providers/category_providers.dart';
 import '../../../shared/providers/database_provider.dart';
@@ -34,17 +32,20 @@ class SettingsScreen extends HookConsumerWidget {
           SegmentedButton<ThemeMode>(
             segments: const [
               ButtonSegment(
-                  value: ThemeMode.light,
-                  label: Text('Light'),
-                  icon: Icon(Icons.light_mode)),
+                value: ThemeMode.light,
+                label: Text('Light'),
+                icon: Icon(Icons.light_mode),
+              ),
               ButtonSegment(
-                  value: ThemeMode.system,
-                  label: Text('System'),
-                  icon: Icon(Icons.brightness_auto)),
+                value: ThemeMode.system,
+                label: Text('System'),
+                icon: Icon(Icons.brightness_auto),
+              ),
               ButtonSegment(
-                  value: ThemeMode.dark,
-                  label: Text('Dark'),
-                  icon: Icon(Icons.dark_mode)),
+                value: ThemeMode.dark,
+                label: Text('Dark'),
+                icon: Icon(Icons.dark_mode),
+              ),
             ],
             selected: {themeMode},
             onSelectionChanged: (s) {
@@ -59,13 +60,15 @@ class SettingsScreen extends HookConsumerWidget {
           const SizedBox(height: 24),
 
           // ── Categories ───────────────────────────────────────────────
-          Row(children: [
-            Expanded(child: Text('Categories', style: tt.titleMedium)),
-            FilledButton.tonal(
-              onPressed: () => _showAddCategoryDialog(context, ref),
-              child: const Text('Add'),
-            ),
-          ]),
+          Row(
+            children: [
+              Expanded(child: Text('Categories', style: tt.titleMedium)),
+              FilledButton.tonal(
+                onPressed: () => _showAddCategoryDialog(context, ref),
+                child: const Text('Add'),
+              ),
+            ],
+          ),
           const SizedBox(height: 8),
           categoriesAsync.when(
             loading: () => const CircularProgressIndicator(),
@@ -75,9 +78,10 @@ class SettingsScreen extends HookConsumerWidget {
               if (custom.isEmpty) {
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: Text('No custom categories yet.',
-                      style: tt.bodyMedium
-                          ?.copyWith(color: cs.onSurfaceVariant)),
+                  child: Text(
+                    'No custom categories yet.',
+                    style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+                  ),
                 );
               }
               return Column(
@@ -108,10 +112,8 @@ class SettingsScreen extends HookConsumerWidget {
                           isDestructive: true,
                         );
                         if (confirmed) {
-                          final catRepo =
-                              ref.read(categoryRepoProvider);
-                          final txRepo =
-                              ref.read(transactionRepoProvider);
+                          final catRepo = ref.read(categoryRepoProvider);
+                          final txRepo = ref.read(transactionRepoProvider);
                           await catRepo.deleteAndReassign(cat.id, txRepo);
                         }
                       },
@@ -137,47 +139,41 @@ class SettingsScreen extends HookConsumerWidget {
   }
 
   Future<void> _exportCsv(BuildContext context, WidgetRef ref) async {
-    // Request storage permission on Android.
-    if (Platform.isAndroid) {
-      final status = await Permission.manageExternalStorage.request();
-      if (!status.isGranted) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Storage permission denied')),
-          );
-        }
-        return;
-      }
-    }
+    // Delegate permission check to PermissionService (Constitution VI).
+    final hasPermission = await PermissionService.ensureStoragePermission(
+      context,
+    );
+    if (!hasPermission) return;
 
     final txState = ref.read(transactionVMProvider).valueOrNull;
     final cats = ref.read(categoryListProvider).valueOrNull ?? [];
     if (txState == null) return;
 
     try {
-      final file = await CsvExportService.exportToCsv(
+      await CsvExportService.exportToCsv(
         transactions: txState.filtered,
         categories: cats,
       );
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Exported: ${file.path}'),
-            duration: const Duration(seconds: 6),
-          ),
+        final snackBar = SnackBar(
+          content: Text('Exported successful'),
+          duration: Duration(seconds: 2),
         );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     } on ExportException catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Export failed: ${e.message}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Export failed: ${e.message}')));
       }
     }
   }
 
   Future<void> _showAddCategoryDialog(
-      BuildContext context, WidgetRef ref) async {
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
     final nameCtrl = TextEditingController();
     final confirmed = await showDialog<bool>(
       context: context,
@@ -190,11 +186,13 @@ class SettingsScreen extends HookConsumerWidget {
         ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.of(ctx).pop(false),
-              child: const Text('Cancel')),
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
           FilledButton(
-              onPressed: () => Navigator.of(ctx).pop(true),
-              child: const Text('Add')),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Add'),
+          ),
         ],
       ),
     );

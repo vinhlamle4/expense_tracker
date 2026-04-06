@@ -1,6 +1,6 @@
 # Expense Tracker — Product Documentation
 
-**Version**: 1.0.0  
+**Version**: 1.1.0  
 **Platform**: iOS · Android  
 **Last Updated**: 2026-04-06  
 **Status**: Production-ready
@@ -39,6 +39,39 @@
 
 ---
 
+### 1.1 Demo
+
+> Xem toàn bộ luồng sử dụng trong một đoạn demo ngắn:
+
+<p align="center">
+  <img src="asset/docs/demo.gif" alt="App Demo" width="320"/>
+</p>
+
+---
+
+#### Dashboard
+
+| Ngày | Tuần | Tháng |
+|------|------|-------|
+| <img src="asset/docs/home_day.png" alt="Dashboard - Ngày" width="220"/> | <img src="asset/docs/home_week.png" alt="Dashboard - Tuần" width="220"/> | <img src="asset/docs/home_month.png" alt="Dashboard - Tháng" width="220"/> |
+
+---
+
+#### Giao dịch
+
+| Danh sách | Thêm giao dịch | Tìm kiếm | Lọc |
+|-----------|----------------|----------|-----|
+| <img src="asset/docs/transactions.png" alt="Danh sách giao dịch" width="160"/> | <img src="asset/docs/transactions_add.png" alt="Thêm giao dịch" width="160"/> | <img src="asset/docs/transactions_search.png" alt="Tìm kiếm" width="160"/> | <img src="asset/docs/transactions_filter.png" alt="Lọc giao dịch" width="160"/> |
+
+---
+
+#### Cài đặt & Xuất CSV
+
+| Cài đặt | Xuất CSV |
+|---------|----------|
+| <img src="asset/docs/setting.png" alt="Cài đặt" width="220"/> | <img src="asset/docs/setting_export.png" alt="Xuất CSV" width="220"/> |
+
+---
 
 ## 2. Tính năng
 
@@ -55,14 +88,10 @@ Tính năng cốt lõi của ứng dụng. Người dùng có thể:
 
 **Màn hình**: `TransactionListScreen` + `AddEditTransactionSheet` (Modal Bottom Sheet)
 
-#### Minh họa màn hình giao dịch:
-
-<img src="asset/docs/transactions.png" width="300"/>
-
 ---
 
 ### 2.2 Phân loại danh mục (US2 — P2)
-
+flutter analyze → No issues found!
 - **11 danh mục mặc định** được seed tự động khi mở app lần đầu:
 
   | Loại | Danh mục |
@@ -87,12 +116,6 @@ Dashboard hiển thị tổng quan tài chính cho khoảng thời gian đã ch�
 - **Empty state**: Hiển thị placeholder khi không có giao dịch trong kỳ đã chọn
 - **Phản ứng tức thì**: Khi thêm/sửa/xoá giao dịch ở tab Transactions, Dashboard tự cập nhật
 
-#### Minh họa Dashboard:
-
-| Theo Ngày                                        | Theo Tuần                                         | Theo Tháng                                         |
-|--------------------------------------------------|---------------------------------------------------|----------------------------------------------------|
-| <img src="asset/docs/home_day.png" width="300"/> | <img src="asset/docs/home_week.png" width="300"/> | <img src="asset/docs/home_month.png" width="300"/> |
-
 ---
 
 ### 2.4 Tìm kiếm & Lọc (US4 — P4)
@@ -114,10 +137,6 @@ Dashboard hiển thị tổng quan tài chính cho khoảng thời gian đã ch�
 - **Dynamic Color**: Trên Android 12+, màu sắc theo Wallpaper của thiết bị (Material You)
 - **Fallback**: Trên thiết bị không hỗ trợ Dynamic Color, dùng seed màu xanh lá (#4CAF50)
 
-#### Minh họa màn hình Cài đặt (Settings):
-
-<img src="asset/docs/settings.png" width="300"/>
-
 ---
 
 ### 2.6 Xuất CSV (US6 — P6)
@@ -130,6 +149,14 @@ Dashboard hiển thị tổng quan tài chính cho khoảng thời gian đã ch�
 - **Quyền Android**: Yêu cầu `MANAGE_EXTERNAL_STORAGE` trước khi ghi (Android runtime permission)
 - **Phản hồi người dùng**: SnackBar hiển thị đường dẫn đầy đủ khi thành công, thông báo lỗi khi thất bại
 - **Dọn dẹp lỗi**: File tạm bị xoá nếu ghi thất bại (không để lại file rỗng)
+
+---
+
+### 2.7 Bảo mật & Quyền truy cập (US7 — P7)
+
+- **Quản lý quyền**: Luôn sử dụng package `permission_handler` cho mọi quyền truy cập runtime (ví dụ: ghi file, truy cập bộ nhớ ngoài).
+- **Trải nghiệm người dùng**: Luôn giải thích lý do xin quyền (rationale) trước khi yêu cầu hoặc khi bị từ chối (Denied/Permanently Denied). Không được yêu cầu quyền mà không có giải thích rõ ràng.
+- **Tuân thủ nền tảng**: Đảm bảo mọi quyền truy cập đều tuân thủ chính sách của Android/iOS. Không tự ý truy cập khi chưa được cấp quyền.
 
 ---
 
@@ -541,6 +568,12 @@ import 'package:isar/isar.dart';           // CẤMTUYỆT ĐỐI trong widget
 import '../../../data/repositories/...';   // CẤMTUYỆT ĐỐI trong widget
 ```
 
+### 8.6 Bảo mật & Quyền truy cập
+
+- Luôn sử dụng package `permission_handler` cho mọi quyền runtime.
+- Trước khi xin quyền hoặc khi bị từ chối, phải giải thích lý do rõ ràng cho người dùng (rationale dialog/snackbar/toast).
+- Không được bypass hoặc hardcode quyền truy cập.
+
 ---
 
 ## 9. Hướng dẫn cài đặt & chạy
@@ -736,3 +769,43 @@ class DashboardSummary {
 ---
 
 *Tài liệu này được tạo tự động từ spec và implementation. Cập nhật khi có thay đổi kiến trúc hoặc tính năng mới.*
+
+## 4. Security & Permissions
+
+### Permission Management
+- **Bắt buộc sử dụng** package [`permission_handler`](https://pub.dev/packages/permission_handler) cho mọi thao tác xin quyền hệ thống (ví dụ: ghi file, truy cập bộ nhớ).
+- Không được sử dụng các API native hoặc package khác để xin quyền mà bỏ qua permission_handler.
+
+### User Experience
+- **Giải thích lý do xin quyền (Rationale):** Trước khi hiện dialog xin quyền, luôn phải hiện một màn giải thích ngắn gọn cho người dùng về lý do cần quyền đó (ví dụ: "Ứng dụng cần quyền truy cập bộ nhớ để xuất file CSV").
+- **Xử lý trường hợp bị từ chối:** Nếu người dùng từ chối (Denied) hoặc từ chối vĩnh viễn (Permanently Denied), phải hiện thông báo rõ ràng, hướng dẫn cách cấp lại quyền trong Settings nếu cần thiết.
+- Không được crash app hoặc ẩn tính năng mà không thông báo lý do cho người dùng.
+
+### Implementation Rules
+- Tất cả logic kiểm tra, xin quyền, và xử lý kết quả phải nằm trong ViewModel hoặc Service, không được viết trực tiếp trong Widget.
+- Khi cần quyền, flow chuẩn:
+  1. Kiểm tra trạng thái quyền hiện tại.
+  2. Nếu chưa được cấp, hiện rationale (giải thích).
+  3. Sau khi người dùng đồng ý, mới gọi permission_handler để xin quyền.
+  4. Nếu bị từ chối, hiện thông báo và hướng dẫn mở Settings nếu cần.
+- Không được gọi trực tiếp các API ghi file/export nếu chưa được cấp quyền.
+
+### Example (pseudo-code)
+```dart
+Future<void> exportCsv(BuildContext context) async {
+  final status = await Permission.storage.status;
+  if (!status.isGranted) {
+    // Hiện dialog giải thích lý do
+    final shouldRequest = await showRationaleDialog(context);
+    if (!shouldRequest) return;
+    final result = await Permission.storage.request();
+    if (!result.isGranted) {
+      // Hiện thông báo lỗi và hướng dẫn mở Settings nếu cần
+      showPermissionDeniedDialog(context, result.isPermanentlyDenied);
+      return;
+    }
+  }
+  // Được quyền, tiếp tục export CSV
+  await doExportCsv();
+}
+```

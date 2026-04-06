@@ -8,7 +8,7 @@
 ## Format: `[ID] [P?] [Story?] Description`
 
 - **[P]** — Can run in parallel (different files, no shared dependencies)
-- **[Story]** — User story tag: US1…US6
+- **[Story]** — User story tag: US1…US7
 - Paths follow the source tree in `plan.md`
 
 ---
@@ -120,26 +120,47 @@
 
 ## Phase 8: US6 — CSV Export (Priority: P6)
 
-**Goal**: Tap "Export to CSV" in Settings; file saved to device Documents; confirmation shows path; filtered subset exported when filters active.  
-**Independent Test**: Add transactions → export → verify file in Documents with correct header + row count; apply category filter → export → verify only filtered rows; test error message on storage permission denied (Android).
+**Goal**: Tap "Export to CSV" in Settings; file saved to the device's public **Downloads** folder; confirmation shows path; filtered subset exported when filters active.  
+**Independent Test**: Add transactions → export → verify file in Downloads folder with correct header + row count; apply category filter → export → verify only filtered rows; test rationale dialog and denied-permission message on Android.
 
-- [x] T036 [P] [US6] Implement `lib/core/utils/csv_export_service.dart` — pure function `Future<File> exportToCsv(List<Transaction> transactions, List<Category> categories)`; builds CSV with header `Date,Type,Category,Amount,Note`; maps `categoryId` → name; writes to `getApplicationDocumentsDirectory()`; throws typed `ExportException` on failure; cleans up partial file on error (depends on T007, T008)
-- [x] T037 [US6] Add "Export to CSV" button to `settings_screen.dart` — calls `CsvExportService` with `filteredTransactions` from `transactionVMProvider`; on Android requests `MANAGE_EXTERNAL_STORAGE` / `WRITE_EXTERNAL_STORAGE` via `permission_handler` before exporting; shows `SnackBar` with file path on success; shows error `SnackBar` on failure (depends on T025, T030, T036)
+- [x] T036 [P] [US6] Implement `lib/core/utils/csv_export_service.dart` — `Future<File> exportToCsv(List<Transaction> transactions, List<Category> categories)`; builds CSV with header `Date,Type,Category,Amount,Note`; maps `categoryId` → name; writes to the device's public **Downloads** folder (Android: `getExternalStorageDirectory()` + `Download/` sub-path or `MediaStore` API; iOS: app Documents directory exposed via Files app); generates a timestamped filename (e.g., `transactions_2026-04-06.csv`); if a file with the same name exists, overwrites or appends an index suffix; throws typed `ExportException` on failure; cleans up partial file on error (depends on T007, T008)
+- [x] T037 [US6] Add "Export to CSV" button to `settings_screen.dart` — delegates permission check to `PermissionService` before calling `CsvExportService`; shows `SnackBar` with file path and "Open" / "Share" quick actions on success; shows error `SnackBar` with actionable guidance on failure or permanent permission denial (depends on T025, T030, T036, T039)
 
-**Checkpoint**: CSV file written to device; openable in Files / spreadsheet app; export respects active filters.
+**Checkpoint**: CSV file written to device Downloads folder; visible in native file manager; openable in Files / spreadsheet app; export respects active filters.
 
 ---
 
 ## Phase 9: Polish & Cross-Cutting Concerns
 
-**Purpose**: Finalize navigation, loading/error states, accessibility, and M3 compliance across all screens.
+**Purpose**: Finalize navigation, loading/error states, accessibility, M3 compliance, and enforce Security & Permissions standards across all screens.
 
-- [x] T038 [P] Finalize `NavigationBar` in `lib/main.dart` — three destinations: Dashboard, Transactions, Settings; M3 `NavigationBar` widget; preserve scroll position per tab using `AutomaticKeepAliveClientMixin` on each screen (depends on T017, T028, T025)
-- [x] T039 [P] Add loading and error states to all `AsyncValue` consumers — each `HookConsumerWidget` wraps `when(data:, loading:, error:)` with M3 `CircularProgressIndicator` and `ErrorWidget`; no unhandled `AsyncValue.error` states
-- [x] T040 [P] M3 color audit — `grep` for hex color literals (`0xFF`, `Color(`, `Colors\.`) outside `app_theme.dart`; replace any violations with `Theme.of(context).colorScheme` tokens; document any intentional exceptions inline
-- [x] T041 [P] Add `Semantics` labels to all interactive widgets — FAB, swipe-to-delete, SegmentedButton, category chips, period selector; verify minimum 48×48 dp touch targets
-- [x] T042 Run `dart run build_runner build --delete-conflicting-outputs` to ensure all Isar `.g.dart` files are up to date; verify `flutter analyze` reports zero errors and zero warnings
-- [x] T043 Smoke-test both Light and Dark modes on iOS Simulator and Android Emulator — verify no hardcoded colors, no overflow errors, no missing empty states
+- [x] T038 [P] Install and configure `permission_handler` in `pubspec.yaml`, `android/app/src/main/AndroidManifest.xml`, and `ios/Runner/Info.plist` (ensure all required permissions for storage/export are present)
+- [x] T039 [P] Implement `PermissionService` in `lib/core/utils/permission_service.dart` — centralize all permission checks/requests, rationale dialogs, and denial handling per Security & Permissions rules
+- [x] T040 Refactor CSV export logic in `csv_export_service.dart` and all call sites to use `PermissionService` for permission checks/requests (no direct permission logic in Widgets)
+- [x] T041 Audit all features for correct use of `permission_handler` and rationale dialogs per Constitution VI; ensure all permission logic is in ViewModel/Service, not Widgets
+- [x] T041b Storage & Data Handling audit — verify CSV writes target the public Downloads folder; confirm no background or automatic writes to public storage; validate Android Scoped Storage and iOS File Sharing compliance per Constitution VI
+- [x] T042 [P] Finalize `NavigationBar` in `lib/main.dart` — three destinations: Dashboard, Transactions, Settings; M3 `NavigationBar` widget; preserve scroll position per tab using `AutomaticKeepAliveClientMixin` on each screen (depends on T017, T028, T025)
+- [x] T043 [P] Add loading and error states to all `AsyncValue` consumers — each `HookConsumerWidget` wraps `when(data:, loading:, error:)` with M3 `CircularProgressIndicator` and `ErrorWidget`; no unhandled `AsyncValue.error` states
+- [x] T044 [P] M3 color audit — `grep` for hex color literals (`0xFF`, `Color(`, `Colors.`) outside `app_theme.dart`; replace any violations with `Theme.of(context).colorScheme` tokens; document any intentional exceptions inline
+- [x] T045 [P] Add `Semantics` labels to all interactive widgets — FAB, swipe-to-delete, SegmentedButton, category chips, period selector; verify minimum 48×48 dp touch targets
+- [x] T046 Run `dart run build_runner build --delete-conflicting-outputs` to ensure all Isar `.g.dart` files are up to date; verify `flutter analyze` reports zero errors and zero warnings
+- [x] T047 Smoke-test both Light and Dark modes on iOS Simulator and Android Emulator — verify no hardcoded colors, no overflow errors, no missing empty states
+
+---
+
+## Phase 10: US7 — External Export & Sharing (Priority: P7)
+
+**Goal**: Exported CSV appears in the device's public Downloads folder; user can open it in Excel/Sheets or share it via Email/Zalo directly from the export confirmation; permission rationale shown; denial handled gracefully.  
+**Independent Test**: Trigger export → open native file manager → confirm file in Downloads with timestamped name; tap "Open" → spreadsheet app opens; tap "Share" → OS share sheet appears; deny permission → rationale dialog shown → guidance to Settings shown.
+
+- [x] T048 [US7] Update `lib/core/utils/csv_export_service.dart` — ensure the target path resolves correctly to the public Downloads folder on both Android (using `path_provider`'s external storage + `Download/` sub-directory, or `MediaStore` API for Android 10+) and iOS (app Documents directory accessible via Files app); generate timestamped filename; handle filename collision (overwrite or indexed suffix) (depends on T036)
+- [x] T049 [US7] Add "Open" quick action to the export success `SnackBar` or dialog in `settings_screen.dart` — use `open_filex` or platform channel to open the CSV with the OS-default app chooser (e.g., Excel, Google Sheets); handle the case where no compatible app is installed with a user-friendly message (depends on T037)
+- [x] T050 [US7] Add "Share" quick action to the export success `SnackBar` or dialog — use `share_plus` package to invoke the OS share sheet with the exported file attached; allow sharing via Email, Zalo, or any installed app that accepts file attachments (depends on T037)
+- [x] T051 [P] [US7] Update `pubspec.yaml` to add `share_plus` and `open_filex` (or equivalent) with pinned version constraints per Constitution V; run `flutter pub get`
+- [ ] T052 [US7] Verify end-to-end on Android Emulator: export → file visible in Downloads via Files app → open in Google Sheets → share via Gmail; verify permission rationale dialog and denial guidance flow (depends on T048, T049, T050)
+- [ ] T053 [P] [US7] Verify end-to-end on iOS Simulator: export → file accessible via Files app → open in Numbers or Google Sheets → share via Mail (depends on T048, T049, T050)
+
+**Checkpoint**: Exported CSV is discoverable in Downloads, openable in a spreadsheet app, and shareable via the OS share sheet — without the user needing to navigate hidden system folders.
 
 ---
 
@@ -149,8 +170,9 @@
 
 - **Phase 1 (Setup)**: No dependencies — start immediately
 - **Phase 2 (Theme Foundation)**: Depends on Phase 1 completion — **blocks all UI work**
-- **Phase 3–8 (User Stories)**: All depend on Phase 1 + 2 completion; stories can proceed in priority order or in parallel if staffed
-- **Phase 9 (Polish)**: Depends on all desired user stories being complete
+- **Phase 3–8 (User Stories US1–US6)**: All depend on Phase 1 + 2 completion; stories can proceed in priority order or in parallel if staffed
+- **Phase 9 (Polish)**: Depends on all US1–US6 stories being complete
+- **Phase 10 (US7 — External Export & Sharing)**: Depends on Phase 8 (US6) and Phase 9 (T038–T039 permission infrastructure)
 
 ### Within Each Phase
 
@@ -165,7 +187,8 @@
 - T004, T005, T006 — three model files, fully parallel
 - T007, T008, T009 — three repository files, parallel after models
 - T015, T021, T026, T029 — provider files, parallel after database provider
-- T038, T039, T040, T041 — polish tasks, all parallel
+- T038, T039, T040, T041, T041b — polish tasks, all parallel
+- T051, T052, T053 — US7 verification tasks, parallel after T048–T050
 
 ---
 
@@ -189,8 +212,9 @@
 | + Phase 5 (US3) | Dashboard chart + period selector reactive |
 | + Phase 6 (US4) | Search and filter live |
 | + Phase 7 (US5) | Theme toggle + persistence |
-| + Phase 8 (US6) | CSV export to device |
-| + Phase 9 | Production-ready: accessible, audited, zero analyze warnings |
+| + Phase 8 (US6) | CSV export to device Downloads folder |
+| + Phase 9 | Production-ready: accessible, audited, permission-compliant, zero analyze warnings |
+| + Phase 10 (US7) | Exported CSV discoverable in Downloads; "Open" in Excel/Sheets; "Share" via Email/Zalo |
 
 ---
 
@@ -202,4 +226,5 @@
 - Widget files MUST NOT import `isar` or `*_repository.dart` directly — violation of Constitution Principle I
 - All colors in feature code MUST use `Theme.of(context).colorScheme` — violation of Constitution Principle II
 - `HookConsumerWidget` is default; document any `ConsumerWidget` choice with a comment
-
+- CSV exports MUST write to the public Downloads folder, not `getApplicationDocumentsDirectory()` — violation of Constitution Principle VI (Storage & Data Handling)
+- Permission rationale dialog MUST precede the OS permission prompt — no direct `Permission.*.request()` without first showing rationale (Constitution Principle VI)
