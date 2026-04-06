@@ -37,8 +37,12 @@
 | **Đơn người dùng** | Thiết kế cho một thiết bị, một người dùng — không cần đăng nhập |
 | **Tiền tệ mặc định** | VND (Vietnamese Dong) |
 
----
 
+|   | |
+|---|---|
+| <img src=""> | |
+|   | |
+---
 
 ## 2. Tính năng
 
@@ -55,10 +59,6 @@ Tính năng cốt lõi của ứng dụng. Người dùng có thể:
 
 **Màn hình**: `TransactionListScreen` + `AddEditTransactionSheet` (Modal Bottom Sheet)
 
-#### Minh họa màn hình giao dịch:
-
-<img src="asset/docs/transactions.png" width="300"/>
-
 ---
 
 ### 2.2 Phân loại danh mục (US2 — P2)
@@ -66,7 +66,7 @@ Tính năng cốt lõi của ứng dụng. Người dùng có thể:
 - **11 danh mục mặc định** được seed tự động khi mở app lần đầu:
 
   | Loại | Danh mục |
-    |------|----------|
+  |------|----------|
   | Chi tiêu | Food & Drink · Transport · Shopping · Healthcare · Entertainment · Education · Other Expense |
   | Thu nhập | Salary · Freelance · Other Income |
   | Chung | Uncategorized (fallback) |
@@ -86,12 +86,6 @@ Dashboard hiển thị tổng quan tài chính cho khoảng thời gian đã ch�
 - **Bộ chọn kỳ**: Ngày / Tuần / Tháng — cập nhật tức thì khi chuyển đổi
 - **Empty state**: Hiển thị placeholder khi không có giao dịch trong kỳ đã chọn
 - **Phản ứng tức thì**: Khi thêm/sửa/xoá giao dịch ở tab Transactions, Dashboard tự cập nhật
-
-#### Minh họa Dashboard:
-
-| Theo Ngày                                        | Theo Tuần                                         | Theo Tháng                                         |
-|--------------------------------------------------|---------------------------------------------------|----------------------------------------------------|
-| <img src="asset/docs/home_day.png" width="300"/> | <img src="asset/docs/home_week.png" width="300"/> | <img src="asset/docs/home_month.png" width="300"/> |
 
 ---
 
@@ -113,10 +107,6 @@ Dashboard hiển thị tổng quan tài chính cho khoảng thời gian đã ch�
 - **Lưu bền vững**: Chế độ được lưu vào Isar DB, khôi phục chính xác khi mở lại app — không có hiện tượng nhấp nháy (flash)
 - **Dynamic Color**: Trên Android 12+, màu sắc theo Wallpaper của thiết bị (Material You)
 - **Fallback**: Trên thiết bị không hỗ trợ Dynamic Color, dùng seed màu xanh lá (#4CAF50)
-
-#### Minh họa màn hình Cài đặt (Settings):
-
-<img src="asset/docs/settings.png" width="300"/>
 
 ---
 
@@ -736,3 +726,4 @@ class DashboardSummary {
 ---
 
 *Tài liệu này được tạo tự động từ spec và implementation. Cập nhật khi có thay đổi kiến trúc hoặc tính năng mới.*
+
