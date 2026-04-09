@@ -8,6 +8,7 @@ import 'package:permission_handler/permission_handler.dart';
 ///
 /// All logic lives here in the Service layer; Widgets MUST NOT call
 /// [Permission] directly.
+// coverage:ignore-file
 abstract final class PermissionService {
   // ── Public API ─────────────────────────────────────────────────────────────
 

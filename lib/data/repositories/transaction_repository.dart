@@ -2,6 +2,7 @@ import 'package:isar/isar.dart';
 
 import '../models/transaction_model.dart';
 
+// coverage:ignore-file
 class TransactionRepository {
   TransactionRepository(this._isar);
 

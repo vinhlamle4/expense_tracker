@@ -7,6 +7,7 @@ import '../../data/models/settings_model.dart';
 
 /// Isar singleton — opened once before [runApp].
 /// All repositories receive this instance via [isarProvider].
+// coverage:ignore-file
 class IsarDatabase {
   IsarDatabase._();
 

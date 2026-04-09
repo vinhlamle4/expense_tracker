@@ -153,36 +153,10 @@ Create test infrastructure: fixtures, mocks, and basic model tests.
 
 ---
 
-- [ ] T001 Create test/fixtures/ directory structure
-  - Goal: Set up directory organization for test helpers
-  - Deliverable: Directories created, ready for files
-  - Reference: test/unit/, test/fixtures/
-
-- [ ] T002 Implement test/fixtures/fixtures.dart (complete)
-  - Goal: All test data factory methods
-  - Deliverable: test/fixtures/fixtures.dart (~150 lines)
-  - Functions: All transaction, category, settings builders
-  - Task Count: Single consolidated file with all factories
-
-- [ ] T003 Implement test/fixtures/mocks.dart (complete)
-  - Goal: All mock class definitions
-  - Deliverable: test/fixtures/mocks.dart (~200 lines)
-  - Classes: MockIsar, repositories, services, utilities
-  - Task Count: Single consolidated file with all mocks
-
-- [ ] T004 [P] Implement basic model tests (3 files)
-  - Task: T004a - test/unit/models/transaction_model_test.dart (5 tests)
-    - Goal: Test TransactionModel creation, fields, types
-    - Coverage: Happy path, edge cases, boundaries
-    - Test Count: 5 assertions
-  - Task: T004b - test/unit/models/category_model_test.dart (5 tests)
-    - Goal: Test CategoryModel, fastHash, factories
-    - Coverage: Hash consistency, factory methods, color values
-    - Test Count: 5 assertions
-  - Task: T004c - test/unit/models/settings_model_test.dart (5 tests)
-    - Goal: Test SettingsModel, theme modes
-    - Coverage: Singleton behavior, theme persistence
-    - Test Count: 5 assertions
+- [X] T001 Create test/fixtures/ directory structure
+- [X] T002 Implement test/fixtures/fixtures.dart (complete)
+- [X] T003 Implement test/fixtures/mocks.dart (complete)
+- [X] T004 [P] Implement basic model tests (3 files)
 
 ---
 
@@ -195,45 +169,10 @@ Comprehensive tests for all database repository operations.
 
 ---
 
-- [ ] T005 [P] Implement test/unit/data/repositories/transaction_repository_test.dart (3h)
-  - Goal: Test all TransactionRepository CRUD operations
-  - File Path: test/unit/data/repositories/transaction_repository_test.dart
-  - Test Coverage:
-    - Happy paths: add, update, delete, getAll, watchAll (5 tests)
-    - Edge cases: 1000+ transactions, concurrent operations (2 tests)
-    - Invalid inputs: null values, invalid IDs (2 tests)
-    - Boundaries: large amounts, date boundaries (2 tests)
-    - Failures: database errors, write failures (3 tests)
-    - Bulk ops: reassignCategory logic (2 tests)
-  - Total Tests: 12
-  - Expected Coverage: 85%
-
-- [ ] T006 [P] Implement test/unit/data/repositories/category_repository_test.dart (3h)
-  - Goal: Test CategoryRepository seeding, CRUD, reassignment
-  - File Path: test/unit/data/repositories/category_repository_test.dart
-  - Test Coverage:
-    - Happy paths: seedDefaults, getAll, getById, add, delete (5 tests)
-    - Edge cases: idempotent seeding, category count (2 tests)
-    - Invalid inputs: duplicate IDs, invalid names (2 tests)
-    - Boundaries: large icon codes, color values (2 tests)
-    - Failures: seed errors, delete with transactions (3 tests)
-    - Reassign: deleteAndReassign logic (2 tests)
-  - Total Tests: 12
-  - Expected Coverage: 85%
-
-- [ ] T007 [P] Implement test/unit/data/repositories/settings_repository_test.dart (2h)
-  - Goal: Test SettingsRepository initialization and persistence
-  - File Path: test/unit/data/repositories/settings_repository_test.dart
-  - Test Coverage:
-    - Happy paths: getSettings, saveThemeMode (light, dark, system) (4 tests)
-    - Edge cases: first-time initialization, existing settings (2 tests)
-    - Invalid inputs: invalid theme modes (1 test)
-    - Boundaries: settings ID always 0 (1 test)
-    - Failures: persistence errors (1 test)
-  - Total Tests: 9
-  - Expected Coverage: 85%
-
-- [ ] T008 [P] Verify repository test coverage (2h)
+- [X] T005 [P] Implement test/unit/data/repositories/transaction_repository_test.dart (3h)
+- [X] T006 [P] Implement test/unit/data/repositories/category_repository_test.dart (3h)
+- [X] T007 [P] Implement test/unit/data/repositories/settings_repository_test.dart (2h)
+- [X] T008 [P] Verify repository test coverage (2h)
   - Goal: Run repository tests, verify 80%+ coverage
   - Command: flutter test test/unit/data/repositories/ --coverage
   - Verify: LCOV report shows 80%+ for each repository
@@ -251,50 +190,10 @@ Comprehensive tests for business logic ViewModels (filtering, calculations, stat
 
 ---
 
-- [ ] T009 [P] Implement test/unit/features/transaction/viewmodels/transaction_view_model_test.dart (5h)
-  - Goal: Test TransactionViewModel filtering, calculations, state updates
-  - File Path: test/unit/features/transaction/viewmodels/transaction_view_model_test.dart
-  - Test Coverage:
-    - Happy paths: _compute() with no filters, all filters, combinations (4 tests)
-    - Edge cases: 1000+ transactions, empty list, single item (3 tests)
-    - Invalid inputs: invalid filter combinations, null values (2 tests)
-    - Boundaries: date range edges, min/max amounts (3 tests)
-    - Failures: missing categories, calculation errors (2 tests)
-    - Calculations: income, expense, balance, totals (3 tests)
-    - State: reactive updates, filter changes, database changes (3 tests)
-  - Total Tests: 15
-  - Expected Coverage: 85%
-
-- [ ] T010 [P] Implement test/unit/features/dashboard/viewmodels/dashboard_view_model_test.dart (5h)
-  - Goal: Test DashboardViewModel period filtering, category breakdown, calculations
-  - File Path: test/unit/features/dashboard/viewmodels/dashboard_view_model_test.dart
-  - Test Coverage:
-    - Happy paths: Day/Week/Month periods, category breakdown (4 tests)
-    - Edge cases: month/year boundaries, week spanning boundaries (2 tests)
-    - Invalid inputs: missing categoryMap entries, null values (2 tests)
-    - Boundaries: period transitions, single category (2 tests)
-    - Failures: calculation errors, missing categories (2 tests)
-    - Period logic: _inPeriod() for all periods (3 tests)
-    - Week logic: _isSameWeek() edge cases (3 tests)
-    - Empty state: no transactions for period (1 test)
-  - Total Tests: 15
-  - Expected Coverage: 85%
-
-- [ ] T011 [P] Implement test/unit/features/settings/viewmodels/theme_view_model_test.dart (2h)
-  - Goal: Test ThemeViewModel mode changes and persistence
-  - File Path: test/unit/features/settings/viewmodels/theme_view_model_test.dart
-  - Test Coverage:
-    - Happy paths: setThemeMode (light, dark, system) (3 tests)
-    - Edge cases: repeated mode changes (1 test)
-    - Invalid inputs: invalid mode strings (1 test)
-    - Boundaries: mode transitions (1 test)
-    - Failures: persistence errors (1 test)
-    - State: _parse() logic for all modes (2 tests)
-    - Persistence: savings to repository (1 test)
-  - Total Tests: 10
-  - Expected Coverage: 85%
-
-- [ ] T012 [P] Verify ViewModel test coverage (2h)
+- [X] T009 [P] Implement test/unit/features/transaction/viewmodels/transaction_view_model_test.dart (5h)
+- [X] T010 [P] Implement test/unit/features/dashboard/viewmodels/dashboard_view_model_test.dart (5h)
+- [X] T011 [P] Implement test/unit/features/settings/viewmodels/theme_view_model_test.dart (2h)
+- [X] T012 [P] Verify ViewModel test coverage (2h)
   - Goal: Run ViewModel tests, verify 80%+ coverage
   - Command: flutter test test/unit/features/*/viewmodels/ --coverage
   - Verify: LCOV report shows 80%+ for each ViewModel
@@ -312,37 +211,9 @@ Comprehensive tests for CSV export and permission services.
 
 ---
 
-- [ ] T013 [P] Implement test/unit/core/utils/csv_export_service_test.dart (6h)
-  - Goal: Test CSV generation, path resolution, error handling
-  - File Path: test/unit/core/utils/csv_export_service_test.dart
-  - Test Coverage:
-    - Happy paths: exportToCsv() CSV format, correct columns (3 tests)
-    - Edge cases: 1000+ transactions, filename conflicts, empty list (3 tests)
-    - Invalid inputs: null transactions, missing categories (2 tests)
-    - Boundaries: CSV header/data rows, 100+ increments (2 tests)
-    - Failures: write errors, permission denied, storage unavailable (3 tests)
-    - Path resolution: Android path, iOS path, fallback logic (2 tests)
-    - Filename handling: _resolveUniqueFile() conflict resolution (2 tests)
-    - Error cleanup: partial file deletion on failure (1 test)
-  - Total Tests: 18
-  - Expected Coverage: 85%
-
-- [ ] T014 [P] Implement test/unit/core/utils/permission_service_test.dart (6h)
-  - Goal: Test permission flow, dialogs, platform differences
-  - File Path: test/unit/core/utils/permission_service_test.dart
-  - Test Coverage:
-    - Happy paths: iOS bypass, Android granted, rationale shown (3 tests)
-    - Edge cases: context unmounted, dialog cancellation (2 tests)
-    - Invalid inputs: invalid permission states (1 test)
-    - Boundaries: permission state transitions (2 tests)
-    - Failures: permanent denial, rationale rejection, denied twice (3 tests)
-    - Permission flow: ensureStoragePermission() complete path (2 tests)
-    - Dialogs: _showRationaleDialog(), _showDenialDialog() (2 tests)
-    - Platform: iOS/Android specific behavior (2 tests)
-  - Total Tests: 17
-  - Expected Coverage: 85%
-
-- [ ] T015 [P] Verify service test coverage (2h)
+- [X] T013 [P] Implement test/unit/core/utils/csv_export_service_test.dart (6h)
+- [X] T014 [P] Implement test/unit/core/utils/permission_service_test.dart (6h)
+- [X] T015 [P] Verify service test coverage (2h)
   - Goal: Run service tests, verify 80%+ coverage
   - Command: flutter test test/unit/core/utils/ --coverage
   - Verify: LCOV report shows 80%+ for each service
@@ -360,40 +231,11 @@ Generate coverage reports, verify targets, update documentation, final quality c
 
 ---
 
-- [ ] T016 Run complete test suite and generate coverage report (2h)
-  - Goal: Execute all tests and generate LCOV report
-  - Command: flutter test --coverage
-  - Verify: All tests pass (100% pass rate)
-  - Output: coverage/lcov.info (LCOV format)
-  - Deliverable: Verified coverage report
-
-- [ ] T017 Verify 80% coverage target per component (2h)
-  - Goal: Analyze coverage report and verify 80%+ per component
-  - Components to verify:
-    - TransactionViewModel (target: ≥80%)
-    - TransactionRepository (target: ≥80%)
-    - CategoryRepository (target: ≥80%)
-    - SettingsRepository (target: ≥80%)
-    - DashboardViewModel (target: ≥80%)
-    - CsvExportService (target: ≥80%)
-    - PermissionService (target: ≥80%)
-  - Deliverable: Coverage summary table
-
-- [ ] T018 Document test coverage results (1h)
-  - Goal: Create coverage summary document
-  - Deliverable: specs/004-unit-testing-80pct/COVERAGE.md
-  - Contains: Per-component coverage %, line counts, gap analysis
-  - Metrics: Total coverage %, pass rate, execution time
-
-- [ ] T019 Update README with test instructions (1h)
-  - Goal: Document how to run tests
-  - Deliverable: Updated README.md in project root
-  - Contains: Test commands, coverage generation, troubleshooting
-
-- [ ] T020 Create test patterns reference guide (1h)
-  - Goal: Document common test patterns used in suite
-  - Deliverable: specs/004-unit-testing-80pct/TEST_PATTERNS.md
-  - Contains: Examples of happy path, edge case, invalid input, boundary, failure tests
+- [X] T016 Run complete test suite and generate coverage report (2h)
+- [X] T017 Verify 80% coverage target per component (2h)
+- [X] T018 Document test coverage results (1h)
+- [X] T019 Update README with test instructions (1h)
+- [X] T020 Create test patterns reference guide (1h)
 
 ---
 
