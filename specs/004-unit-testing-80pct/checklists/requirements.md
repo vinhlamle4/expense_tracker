@@ -29,6 +29,14 @@
 - [x] Feature meets measurable outcomes defined in Success Criteria
 - [x] No implementation details leak into specification
 
+## Clarifications Applied
+
+- [x] Coverage measurement clarified: LCOV format via `flutter test --coverage`
+- [x] Test execution timing clarified: Local dev only, <30s flexible target (not hard requirement)
+- [x] Clarifications section added to spec with Q&A recorded
+- [x] Assumptions updated with clarified details
+- [x] Success criteria updated to reflect local-dev-only scope
+
 ## Notes
 
 - Specification is comprehensive and ready for planning phase
@@ -36,5 +44,7 @@
 - 16 functional requirements clearly defined
 - 10 success criteria with measurable outcomes
 - Edge cases identified and mapped to test coverage
+- **Clarifications completed** - 2 minor items resolved
+- **Scope confirmed**: Local development testing only (no CI/CD)
 - Ready for `/speckit.plan` phase
 

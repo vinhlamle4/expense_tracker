@@ -193,11 +193,16 @@ A test developer needs to verify that PermissionService correctly checks storage
 - **SC-T005**: 80% code coverage achieved for DashboardViewModel (period filtering, category breakdown, totals calculation).
 - **SC-T006**: 80% code coverage achieved for CsvExportService (CSV generation, path resolution, conflict handling, error cleanup).
 - **SC-T007**: 80% code coverage achieved for PermissionService (permission flow, dialogs, iOS/Android platform differences).
-- **SC-T008**: All unit tests pass consistently on local machine and CI/CD pipeline.
-- **SC-T009**: Test execution completes in under 30 seconds for the full test suite.
+- **SC-T008**: All unit tests pass consistently on local machine.
+- **SC-T009**: Local development test execution aims for under 30 seconds for the full test suite (flexible target for developer experience; not a hard blocking requirement).
 - **SC-T010**: All edge cases identified in spec are covered by at least one test case.
 
-## Assumptions
+## Clarifications
+
+### Session 2026-04-09
+
+- **Q: How should code coverage be measured and reported?** → A: LCOV format via `flutter test --coverage` with CI/CD integration (e.g., codecov.io, GitHub Actions)
+- **Q: Is 30-second test execution a hard requirement?** → A: Local development only, aim for <30s as flexible target (not hard constraint)
 
 ## Assumptions
 
@@ -209,7 +214,9 @@ A test developer needs to verify that PermissionService correctly checks storage
 - ViewModels, Repositories, and Services are testable in isolation without full app initialization.
 - Tests do NOT require Firebase, network, or any external services.
 - Tests focus on business logic correctness, not UI rendering or widget interaction.
-- Coverage is measured using coverage tools (e.g., `flutter test --coverage`).
+- **Coverage Measurement**: LCOV format generated via `flutter test --coverage`; integrates with CI/CD tools (codecov.io, GitHub Actions) for automated reporting
+- **Test Execution Target**: Local development tests aim for <30s; this is a flexible performance target, not a hard blocking requirement
+- Tests are designed for **local development workflow** only; CI/CD integration is out of scope for this spec
 - The test suite is organized in `test/unit/` with files mirroring `lib/` structure (e.g., `test/unit/features/transaction/viewmodels/transaction_view_model_test.dart`).
 - All mocked dependencies are injected via constructors or service locators; no global state or hard-coded dependencies.
 - Tests run independently and can be executed in any order without side effects.
