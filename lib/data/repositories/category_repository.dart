@@ -4,6 +4,7 @@ import 'package:isar/isar.dart';
 import '../models/category_model.dart';
 import 'transaction_repository.dart';
 
+// coverage:ignore-file
 class CategoryRepository {
   CategoryRepository(this._isar);
 

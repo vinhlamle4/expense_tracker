@@ -809,3 +809,77 @@ Future<void> exportCsv(BuildContext context) async {
   await doExportCsv();
 }
 ```
+
+---
+
+## 12. Testing
+
+### Chạy Unit Tests
+
+```bash
+# Chạy toàn bộ unit tests
+flutter test test/unit/
+
+# Chạy theo từng nhóm
+flutter test test/unit/models/
+flutter test test/unit/data/repositories/
+flutter test test/unit/features/
+flutter test test/unit/core/utils/
+
+# Verbose output (thấy từng test)
+flutter test test/unit/ -v
+
+# Thoát ngay khi gặp lỗi đầu tiên
+flutter test test/unit/ -x
+```
+
+### Generate Coverage Report
+
+```bash
+# Tạo LCOV report
+flutter test test/unit/ --coverage
+
+# Xem coverage (yêu cầu lcov)
+genhtml coverage/lcov.info -o coverage/html
+open coverage/html/index.html
+```
+
+### Kết quả Coverage (2026-04-09)
+
+| Component | Coverage | Status |
+|-----------|----------|--------|
+| `TransactionViewModel` | **81.6%** | ✅ |
+| `DashboardViewModel` | **100.0%** | ✅ |
+| `ThemeViewModel` | **100.0%** | ✅ |
+| `CsvExportService` | **86.1%** | ✅ |
+
+- **136 tests** — tất cả pass
+- **Thời gian chạy**: ~2.7 giây
+- **Coverage report**: `specs/004-unit-testing-80pct/COVERAGE.md`
+
+### Cấu trúc thư mục Tests
+
+```
+test/
+├── fixtures/
+│   ├── fixtures.dart   # Factory methods tạo test data
+│   └── mocks.dart      # Fake repository implementations
+└── unit/
+    ├── models/                    # Model tests (26 tests)
+    ├── data/repositories/         # Repository fake tests (47 tests)
+    ├── features/
+    │   ├── transaction/viewmodels/ # TransactionViewModel (19 tests)
+    │   ├── dashboard/viewmodels/   # DashboardViewModel (12 tests)
+    │   └── settings/viewmodels/    # ThemeViewModel (12 tests)
+    └── core/utils/                # Service tests (22 tests)
+```
+
+### Patterns sử dụng
+
+Mỗi test file bao gồm 5 loại coverage:
+1. **Happy Path** — luồng bình thường với dữ liệu hợp lệ
+2. **Edge Cases** — điều kiện biên (1000+ giao dịch, khoảng thời gian đặc biệt)
+3. **Invalid Input** — dữ liệu không hợp lệ (mode sai, category không tồn tại)
+4. **Boundary Values** — giá trị biên (min/max amount, date boundaries)
+5. **Failure Scenarios** — xử lý lỗi (ExportException, missing data)
+

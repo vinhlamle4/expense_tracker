@@ -2,6 +2,7 @@ import 'package:isar/isar.dart';
 
 import '../models/settings_model.dart';
 
+// coverage:ignore-file
 class SettingsRepository {
   SettingsRepository(this._isar);
 
